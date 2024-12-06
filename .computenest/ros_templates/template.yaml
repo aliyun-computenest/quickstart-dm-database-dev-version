@@ -1,7 +1,7 @@
 ROSTemplateFormatVersion: '2015-09-01'
 Description:
-  en: DockerCompose service template
-  zh-cn: DockerCompose服务模板
+  en: DM8 database
+  zh-cn: 达梦DM8数据库
 Parameters:
   PayType:
     Type: String
@@ -115,11 +115,10 @@ Resources:
       VpcId:
         Ref: VpcId
       SecurityGroupIngress:
-        - PortRange: 8090/8090
+        - PortRange: 30236/30236
           Priority: 1
           SourceCidrIp: 0.0.0.0/0
           IpProtocol: tcp
-          NicType: internet
   InstanceGroup:
     Type: ALIYUN::ECS::InstanceGroup
     Properties:
@@ -145,7 +144,7 @@ Resources:
         Ref: EcsInstanceType
       SystemDiskCategory: cloud_essd
       SystemDiskSize: 200
-      InternetMaxBandwidthOut: 5
+      InternetMaxBandwidthOut: 0
       IoOptimized: optimized
       MaxAmount: 1
   RunInstallCommand:
@@ -161,89 +160,30 @@ Resources:
       CommandContent:
         Fn::Sub:
           - |
-            yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-            yum makecache fast
-            yum -y install docker-ce jq
-            mkdir -p /etc/docker
-            tee /etc/docker/daemon.json <<-'EOF'
-            {
-                "registry-mirrors": [
-                    "https://0vmzj3q6.mirror.aliyuncs.com",
-                    "https://docker.m.daocloud.io",
-                    "https://mirror.baidubce.com",
-                    "https://dockerproxy.com",
-                    "https://mirror.iscas.ac.cn",
-                    "https://huecker.io",
-                    "https://dockerhub.timeweb.cloud",
-                    "https://noohub.ru",
-                    "https://vlgh0kqj.mirror.aliyuncs.com"
-                ]
-            }
-            EOF
-            systemctl enable docker
-            systemctl start docker
-            sleep 10
-
-            dockerJson='{{ computenest::acr::dockerconfigjson }}'
-            decodeDockerJson=$(echo $dockerJson | base64 -d)
-            host=$(echo $decodeDockerJson | jq '.auths' | jq 'keys' | jq .[0])
-            username=$(echo $decodeDockerJson | jq ".auths.$host.username" | tr -d '"')
-            password=$(echo $decodeDockerJson | jq ".auths.$host.password" | tr -d '"')
-            host=$(echo $host | tr -d '"')
-            docker login $host --username=$username --password=$password
-
-            mkdir -p /home/admin/application
-            cat >/home/admin/application/docker-compose.yaml<<EOF
+            wget '{{ computenest::file::dm8 }}' -O dm8.tar
+            docker load -i dm8.tar
+            # docker run -d -p 30236:5236 --restart=always --name=dm8_test --privileged=true -e LD_LIBRARY_PATH=/opt/dmdbms/bin -e PAGE_SIZE=16 -e EXTENT_SIZE=32 -e LOG_SIZE=1024 -e UNICODE_FLAG=1  -e INSTANCE_NAME=dm8_test -v /opt/data:/opt/dmdbms/data dm8:dm8_20240422_rev215128_x86_rh6_64
+            mkdir -p /opt/application /opt/data
+            cat >/opt/application/docker-compose.yaml<<EOF
             version: "3"
-            
             services:
-              halo:
-                image: registry.fit2cloud.com/halo/halo:2.16
-                restart: on-failure:3
-                depends_on:
-                  halodb:
-                    condition: service_healthy
-                networks:
-                  halo_network:
+              dm8:
+                image: dm8:dm8_20240422_rev215128_x86_rh6_64
+                privileged: true
+                restart: always
                 volumes:
-                  - ./halo2:/root/.halo2
+                  - /opt/data:/opt/dmdbms/data
                 ports:
-                  - "8090:8090"
-                healthcheck:
-                  test: ["CMD", "curl", "-f", "http://localhost:8090/actuator/health/readiness"]
-                  interval: 30s
-                  timeout: 5s
-                  retries: 5
-                  start_period: 30s          
-                command:
-                  - --spring.r2dbc.url=r2dbc:pool:postgresql://halodb/halo
-                  - --spring.r2dbc.username=halo
-                  # PostgreSQL 的密码，请保证与下方 POSTGRES_PASSWORD 的变量值一致。
-                  - --spring.r2dbc.password=openpostgresql
-                  - --spring.sql.init.platform=postgresql
-                  # 外部访问地址，请根据实际需要修改
-                  - --halo.external-url=http://localhost:8090/
-              halodb:
-                image: postgres:15.4
-                restart: on-failure:3
-                networks:
-                  halo_network:
-                volumes:
-                  - ./db:/var/lib/postgresql/data
-                healthcheck:
-                  test: [ "CMD", "pg_isready" ]
-                  interval: 10s
-                  timeout: 5s
-                  retries: 5
+                  - "30236:5236"
                 environment:
-                  - POSTGRES_PASSWORD=openpostgresql
-                  - POSTGRES_USER=halo
-                  - POSTGRES_DB=halo
-                  - PGUSER=halo
-            
+                  - LD_LIBRARY_PATH=/opt/dmdbms/bin
+                  - PAGE_SIZE=16
+                  - EXTENT_SIZE=32
+                  - LOG_SIZE=1024
+                  - UNICODE_FLAG=1
+                  - INSTANCE_NAME=dm8
             networks:
-              halo_network:
-            
+              dm8_network:
             EOF
 
             cat > /etc/systemd/system/docker-compose-app.service <<EOF
@@ -255,7 +195,7 @@ Resources:
             [Service]
             Type=oneshot
             RemainAfterExit=yes
-            WorkingDirectory=/home/admin/application
+            WorkingDirectory=/opt/application
             ExecStart=/usr/bin/docker compose up -d
             ExecStop=/usr/bin/docker compose down
             TimeoutStartSec=0
@@ -264,32 +204,11 @@ Resources:
             WantedBy=multi-user.target
             EOF
 
-            # 在Docker Compose启动前执行此命令片段，命令中可以引用参数
-            echo "before docker compose starts"
-            
             systemctl start docker-compose-app
             sleep 10
-            # 在Docker Compose启动后执行此命令片段，命令中可以引用参数
-            echo "after docker compose starts"
-            
-
             ARGUS_VERSION=3.5.7 /bin/bash -c "$(curl -sS https://cms-agent-${RegionId}.oss-${RegionId}-internal.aliyuncs.com/Argus/agent_install_ecs-1.7.sh)" >> /root/install_cms_agent.log 2>&1
           - RegionId:
               Ref: ALIYUN::Region
-Outputs:
-  ServerAddress:
-    Description:
-      en: ServerAddress.
-      zh-cn: 访问页面。
-    Value:
-      Fn::Sub:
-        - 'http://${ServerAddress}:8090'
-        - ServerAddress:
-            Fn::Select:
-            - 0
-            - Fn::GetAtt:
-              - InstanceGroup
-              - PublicIps
 Metadata:
   ALIYUN::ROS::Interface:
     ParameterGroups:
