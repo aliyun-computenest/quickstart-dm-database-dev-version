@@ -4,7 +4,7 @@ Service:
   DeployMetadata:
     SupplierDeployMetadata:
       FileArtifactRelation:
-        '{{ computenest::file::wordpress }}':
+        '{{ computenest::file::dm8 }}':
           # 达梦安装文件超过github允许的最大文件大小，所以不在github中维护
           ArtifactId: artifact-efa5575357b647368b1e
           ArtifactVersion: 1
