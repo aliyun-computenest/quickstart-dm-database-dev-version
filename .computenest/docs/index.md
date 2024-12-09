@@ -51,16 +51,15 @@
 1. 访问计算巢达梦数据库DM8社区版[部署链接](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceName=达梦数据库DM8社区版)，按提示填写部署参数
 2. 选择付费类型
    ![](./images/pay_type_config.png)
-3. 填写实例参数
-   ![](./images/resource_config.png)
-4. 填写数据库SYSDBA密码
+3. 填写实例参数和数据库SYSDBA密码
    ![](./images/resource_config.png)
 4. 填写可用区和网络参数并点击“下一步：确认订单”![](./images/zone_config.png)
 5. 确认部署参数并查看预估价格后，点击立即创建，等待服务实例部署完成
 5. 服务实例部署完成后，点击实例ID进入到详情界面![]()
 6. 按照服务实例概览页的说明登录数据库
+   ![](./images/how_to_use.png)
 
-## 如何管理和登录数据库
+## 如何管理数据库服务
 达梦数据库是以容器形式部署在ECS实例上，已注册为systemctl系统服务并开机自启动。您可以通过命令来管理系统服务。
 ```bash
 启动：sudo systemctl start dm8-database
@@ -68,7 +67,7 @@
 重启：sudo systemctl restart dm8-database
 ```
 
-**登录数据库**
+## 登录数据库
 1. 默认不支持通过公网访问数据库端口。请将您的应用服务器加入到和数据库相同的安全组以访问数据库服务。如需要从公网访问数据库，请先配置安全组规则。
 2. 从服务实例概览页可以查看数据库端口。
 3. 登录数据库

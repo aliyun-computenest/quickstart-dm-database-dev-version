@@ -225,7 +225,7 @@ Outputs:
     Label:
       en: Connect to Database
       zh-cn: 连接数据库
-    Value: 登录ECS实例，执行sudo docker exec -it application-dm8-1 bash进入容器，在容器shell中执行“source /etc/profile;/opt/dmdbms/bin/disql SYSDBA/您设定的SYSDBA密码”连接数据库。
+    Value: 登录ECS实例，执行sudo docker exec -it application-dm8-1 bash进入容器，在容器shell中执行“source /etc/profile;/opt/dmdbms/bin/disql SYSDBA/您设定的SYSDBA密码”连接数据库。Log in to the ECS instance, execute the command to enter the container 'sudo docker exec -it application-dm8-1 bash'; Execute commands in the container shell to connect to the database 'source /etc/profile;/opt/dmdmbs/bin/disql SYSDBA/your-SYSDBA-password'
   DatabasePort: 
     Label:
       en: Database Port
