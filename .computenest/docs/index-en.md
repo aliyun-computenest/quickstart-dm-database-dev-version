@@ -24,7 +24,6 @@ The cost of deploying Dameng Database DM8 Community Edition in the computing nes
 
 - Selected vCPU and Memory Specifications
 - System disk type and capacity
-- Public network bandwidth
 
 
 ## Deployment Architecture
@@ -68,7 +67,7 @@ Restart: sudo systemctl restart dm8 database
 ```
 
 ## Log in to the database
-1. By default, accessing database ports through the public network is not supported. Please add your application server to the same security group as the database to access the database service. If you need to access the database from the public network, please configure the security group rules first.
+1. By default, accessing database ports through the public network is not supported. Please add your application server to the same security group as the database to access the database service. 
 2. The database port can be viewed from the service instance overview page.
 3. Log in to the database
 ```bash
