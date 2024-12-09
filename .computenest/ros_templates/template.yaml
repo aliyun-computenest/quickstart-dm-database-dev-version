@@ -126,11 +126,6 @@ Resources:
         Ref: ALIYUN::StackName
       VpcId:
         Ref: VpcId
-      SecurityGroupIngress:
-        - PortRange: 22/22
-          Priority: 1
-          SourceCidrIp: 0.0.0.0/0
-          IpProtocol: tcp
   InstanceGroup:
     Type: ALIYUN::ECS::InstanceGroup
     Properties:

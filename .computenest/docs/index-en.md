@@ -71,10 +71,10 @@ Restart: sudo systemctl restart dm8 database
 2. The database port can be viewed from the service instance overview page.
 3. Log in to the database
 ```bash
-#Log in to the ECS instance, execute the command to enter the container
+# From service instance details->Resources, click "Remote Connect"->Connect to ECS instance through Session Manager, execute command to enter container
 sudo docker exec -it application-dm8-1 bash
 
 #Execute commands in the container shell to connect to the database
 source /etc/profile
-/Opt/dmdmbs/bin/disql SYSDBA/PASSWORD # Replace PASSWORD with your SYSDBA password
+/opt/dmdbms/bin/disql SYSDBA/PASSWORD # Replace PASSWORD with your SYSDBA password
 ```

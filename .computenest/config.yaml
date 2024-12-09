@@ -15,7 +15,7 @@ Service:
           ArtifactId: artifact-efa5575357b647368b1e
           ArtifactVersion: 1
     TemplateConfigs:
-      - Name: 单机版
+      - Name: single_node
         Url: 'ros_templates/template.yaml'
   ServiceType: private
   ServiceInfo:
