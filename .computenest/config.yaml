@@ -3,6 +3,10 @@ Service:
   DeployType: ros
   DeployMetadata:
     SupplierDeployMetadata:
+      ArtifactRelation:
+        'centos_7_9_x64_20G_alibase_20240403.vhd':
+          ArtifactId: artifact-6312bbc1751943678574
+          ArtifactVersion: 2
       FileArtifactRelation:
         '{{ computenest::file::dm8 }}':
           # 达梦安装文件超过github允许的最大文件大小，所以不在github中维护

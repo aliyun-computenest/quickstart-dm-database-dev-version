@@ -106,6 +106,18 @@ Parameters:
     AssociationPropertyMetadata:
       VpcId: VpcId
       ZoneId: ZoneId
+  SysdbaPassword:
+    NoEcho: true
+    Type: String
+    Description:
+      en: SYSDBA login password, length 9-48, does not support special characters
+      zh-cn: SYSDBA登录密码,长度9-48，不支持特殊字符为密码
+    AllowedPattern: '^[a-zA-Z0-9]{9,48}$'
+    Label:
+      en: SYSDBA Password
+      zh-cn: SYSDBA密码
+    MinLength: 9
+    MaxLength: 48
 Resources:
   SecurityGroup:
     Type: ALIYUN::ECS::SecurityGroup
@@ -160,15 +172,14 @@ Resources:
       CommandContent:
         Fn::Sub:
           - |
-            wget '{{ computenest::file::dm8 }}' -O dm8.tar
-            docker load -i dm8.tar
-            # docker run -d -p 30236:5236 --restart=always --name=dm8_test --privileged=true -e LD_LIBRARY_PATH=/opt/dmdbms/bin -e PAGE_SIZE=16 -e EXTENT_SIZE=32 -e LOG_SIZE=1024 -e UNICODE_FLAG=1  -e INSTANCE_NAME=dm8_test -v /opt/data:/opt/dmdbms/data dm8:dm8_20240422_rev215128_x86_rh6_64
             mkdir -p /opt/application /opt/data
-            cat >/opt/application/docker-compose.yaml<<EOF
+            wget '{{ computenest::file::dm8 }}' -O /opt/application/dm8.tar
+            docker load -i /opt/application/dm8.tar
+            cat >/opt/application/compose.yaml<<EOF
             version: "3"
             services:
               dm8:
-                image: dm8:dm8_20240422_rev215128_x86_rh6_64
+                image: dm8_single:dm8_20241022_rev244896_x86_rh6_64
                 privileged: true
                 restart: always
                 volumes:
@@ -182,13 +193,12 @@ Resources:
                   - LOG_SIZE=1024
                   - UNICODE_FLAG=1
                   - INSTANCE_NAME=dm8
-            networks:
-              dm8_network:
+                  - SYSDBA_PWD=${SysdbaPassword}
             EOF
 
-            cat > /etc/systemd/system/docker-compose-app.service <<EOF
+            cat > /etc/systemd/system/dm8-database.service <<EOF
             [Unit]
-            Description=Docker Compose Application Service
+            Description=DM8 database
             Requires=docker.service
             After=docker.service
 
@@ -204,11 +214,15 @@ Resources:
             WantedBy=multi-user.target
             EOF
 
-            systemctl start docker-compose-app
+            systemctl start dm8-database
             sleep 10
             ARGUS_VERSION=3.5.7 /bin/bash -c "$(curl -sS https://cms-agent-${RegionId}.oss-${RegionId}-internal.aliyuncs.com/Argus/agent_install_ecs-1.7.sh)" >> /root/install_cms_agent.log 2>&1
           - RegionId:
               Ref: ALIYUN::Region
+Outputs:
+  登录数据库:
+    Value: 登录ECS实例，执行sudo docker exec -it application-dm8-1 bash进入容器，在容器shell中执行“source /etc/profile;/opt/dmdbms/bin/disql SYSDBA/您设定的SYSDBA密码”连接数据库。
+  启停数据库服务器: "启动：sudo systemctl start dm8-database；停止：sudo systemctl stop dm8-database；重启：sudo systemctl restart dm8-database"
 Metadata:
   ALIYUN::ROS::Interface:
     ParameterGroups:
@@ -221,8 +235,9 @@ Metadata:
       - Parameters:
           - EcsInstanceType
           - InstancePassword
+          - SysdbaPassword
         Label:
-          default: 资源配置
+          default: 资源和数据库配置
       - Parameters:
           - ZoneId
           - VpcId
