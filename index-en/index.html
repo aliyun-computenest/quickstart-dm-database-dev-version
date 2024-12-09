@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="计算巢是阿里云开放给企业应用服务商的服务管理平台。服务商能够在计算巢上发布私有化部署服务，为其客户提供云上软件一键部署的能力；同时也支持全托管模式的服务，赋能服务商托管其客户资源。">
+  <title>Rapid deployment of Dameng Database DM8 Community Edition by Computing Nest - Aliyun 计算巢 x Demo</title>
+
+  <link rel="shortcut icon" href="../img/favicon.ico">
+
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
+  <link rel="stylesheet" href="../css/theme.css">
+  
+
+  
+
+  
+  
+
+  
+    <script src="../search/main.js"></script>
+  
+
+  
+
+  <script src="../js/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-inner">
+        <div class="logo">
+          <img src="./img/logo-2x.png">
+        </div>
+        <div class="nav-list">
+          <ul>
+          
+              <li><a href="#rapid-deployment-of-dameng-database-dm8-community-edition-by-computing-nest">Rapid deployment of Dameng Database DM8 Community Edition by Computing Nest</a></li>
+              
+                  <li><a href="#overview">Overview</a></li>
+                  
+              
+                  <li><a href="#preconditions">Preconditions</a></li>
+                  
+              
+                  <li><a href="#billing-instructions">Billing Instructions</a></li>
+                  
+              
+                  <li><a href="#deployment-architecture">Deployment Architecture</a></li>
+                  
+              
+                  <li><a href="#parameter-description">Parameter Description</a></li>
+                  
+              
+                  <li><a href="#deployment-process">Deployment process</a></li>
+                  
+              
+                  <li><a href="#how-to-manage-the-database-service">How to manage the database service</a></li>
+                  
+              
+                  <li><a href="#log-in-to-the-database">Log in to the database</a></li>
+                  
+              
+          
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="content theme-github">
+      
+      <div class="content-inner">        
+        
+        <h1 id="rapid-deployment-of-dameng-database-dm8-community-edition-by-computing-nest">Rapid deployment of Dameng Database DM8 Community Edition by Computing Nest</h1>
+<blockquote>
+<p>*<em>Disclaimer * </em>: This service is provided by a third party, and we strive to ensure its security, accuracy, and reliability. However, we cannot guarantee that it is completely free from malfunctions, interruptions, errors, or attacks. Therefore, the company hereby declares that it makes no representations, warranties, or commitments regarding the content, accuracy, completeness, reliability, applicability, or timeliness of this service, and shall not be liable for any direct or indirect losses or damages arising from your use of this service; We assume no responsibility for the content, accuracy, completeness, reliability, applicability, or timeliness of third-party websites, applications, products, and services that you access through this service. You shall be solely responsible for the risks and liabilities arising from the consequences of your use; We shall not be liable for any losses or damages arising from your use of this service, including but not limited to direct losses, indirect losses, loss of profits, loss of goodwill, loss of data, or other economic losses, even if we have been informed in advance of the possibility of such losses or damages; We reserve the right to modify this statement from time to time, so please check this statement regularly before using this service. If you have any questions or concerns about this statement or service, please contact us.</p>
+</blockquote>
+<h2 id="overview">Overview</h2>
+<p>A large-scale general-purpose relational database that is 100% independently developed, with ultimate compatibility, high availability, high reliability, and high security. It is a database product that solves the bottleneck pain points in China's basic software field. Currently, it has helped 50+key industries achieve core system upgrades.</p>
+<p>Product official website address: <a href="https://eco.dameng.com/info/products/dm8">Dameng Database Management System DM8</a></p>
+<h2 id="preconditions">Preconditions</h2>
+<p>Deploying the DM8 Community Edition service instance of Dameng Database requires accessing and creating some Alibaba Cloud resources. Therefore, your account needs to have access to the following resources: (This permission needs to be added only when your account is a RAM account)</p>
+<table>
+<thead>
+<tr>
+<th><font style="color: rgb (51, 51, 51);">Permission Policy Name</font></th>
+<th><font style="color: rgb (51, 51, 51);">Remarks</font></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><font style="color: rgb (51, 51, 51);">AliyunECFullAccess</font></td>
+<td><font style="color: rgb (51, 51, 51);">Manage permissions for Cloud Server Services (ECS)</font></td>
+</tr>
+<tr>
+<td><font style="color: rgb (51, 51, 51);">AliyunVPCFullAccess</font></td>
+<td><font style="color: rgb (51, 51, 51);">Manage VPC permissions</font></td>
+</tr>
+<tr>
+<td><font style="color: rgb (51, 51, 51);">AliyunRosFullAccess</font></td>
+<td><font style="color: rgb (51, 51, 51);">Manage permissions for Resource Organization Services (ROS)</font></td>
+</tr>
+<tr>
+<td><font style="color: rgb (51, 51, 51);">AliyunComputerNestUserFullAccess</font></td>
+<td><font style="color: rgb (51, 51, 51);">Manage user side permissions for Compute Nest service</font></td>
+</tr>
+</tbody>
+</table>
+<h2 id="billing-instructions">Billing Instructions</h2>
+<p>The cost of deploying Dameng Database DM8 Community Edition in the computing nest mainly involves:</p>
+<ul>
+<li>Selected vCPU and Memory Specifications</li>
+<li>System disk type and capacity</li>
+</ul>
+<h2 id="deployment-architecture">Deployment Architecture</h2>
+<p>This service is deployed on a single ECS instance, with the following architecture:</p>
+<p><img alt="" src="../images/architecture_ecs_single.png" /></p>
+<p>By default, public access to databases is not supported to ensure security.</p>
+<h2 id="parameter-description">Parameter Description</h2>
+<table>
+<thead>
+<tr>
+<th><font style="color: rgb (51, 51, 51);">Parameter group</font></th>
+<th><font style="color: rgb (51, 51, 51);">Parameter item</font></th>
+<th><font style="color: rgb (51, 51, 51);">Description</font></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><font style="color: rgb (51, 51, 51);">Service instance</font></td>
+<td><font style="color: rgb (51, 51, 51);">Service instance name</font></td>
+<td><font style="color: rgb (51, 51, 51);">The length should not exceed 64 characters and must start with an English letter. It can include numbers, English letters, dashes (-), and underscores (_)</font></td>
+</tr>
+<tr>
+<td></td>
+<td><font style="color: rgb (51, 51, 51);">Region</font></td>
+<td><font style="color: rgb (51, 51, 51);">Region of service instance deployment</font></td>
+</tr>
+<tr>
+<td></td>
+<td><font style="color: rgb (51, 51, 51);">Payment type</font></td>
+<td><font style="color: rgb (51, 51, 51);">Resource billing types: pay as you go and monthly subscription</font></td>
+</tr>
+<tr>
+<td><font style="color: rgb (51, 51, 51);">Resource and database configuration</font></td>
+<td><font style="color: rgb (51, 51, 51);">Instance type</font></td>
+<td><font style="color: rgb (51, 51, 51);">Instance specifications that can be used under the availability zone</font></td>
+</tr>
+<tr>
+<td></td>
+<td><font style="color: rgb (51, 51, 51);">Instance password</font></td>
+<td><font style="color: rgb (51, 51, 51);">Length 8-30, must contain three items (uppercase letters, lowercase letters, numbers, () `~! @ # $%^&amp;*-+=</td>
+</tr>
+<tr>
+<td></td>
+<td><font style="color: rgb (51, 51, 51);">SYSDBA password</font></td>
+<td><font style="color: rgb (51, 51, 51);">SYSDBA login password, length 9-48, does not support special characters as passwords</font></td>
+</tr>
+<tr>
+<td><font style="color: rgb (51, 51, 51);">Zone Configuration</font></td>
+<td><font style="color: rgb (51, 51, 51);">Zone</font></td>
+<td><font style="color: rgb (51, 51, 51);">Zone where ECS instance is located</font></td>
+</tr>
+<tr>
+<td></td>
+<td><font style="color: rgb (51, 51, 51);">VPC ID</font></td>
+<td><font style="color: rgb (51, 51, 51);">VPC where the resource is located</font></td>
+</tr>
+<tr>
+<td></td>
+<td><font style="color: rgb (51, 51, 51);">Switch ID</font></td>
+<td><font style="color: rgb (51, 51, 51);">Switch where the resource is located</font></td>
+</tr>
+</tbody>
+</table>
+<h2 id="deployment-process">Deployment process</h2>
+<ol>
+<li>Access the Computing Nest Dameng Database DM8 Community Edition <a href="https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&amp;ServiceName=达梦数据库DM8社区版">Deployment Link</a>. Fill in the deployment parameters according to the prompts.</li>
+<li>Select payment type
+<img alt="" src="../images/pay_type_config_en.png" /></li>
+<li>Fill in the instance parameters and database SYSDBA password
+<img alt="" src="../images/resource_config_en.png" /></li>
+<li>Fill in the availability zone and network parameters and click "Next: Confirm Order"
+   <img alt="" src="../images/zone_config_en.png" /></li>
+<li>After confirming the deployment parameters and viewing the estimated price, click "Create Now" and wait for the service instance deployment to complete. After the service instance deployment is completed, click on the instance ID to enter the details interface.</li>
+<li>Log in to the database according to the instructions on the service instance overview page
+<img alt="" src="../images/how_to_use_en.png" /></li>
+</ol>
+<h2 id="how-to-manage-the-database-service">How to manage the database service</h2>
+<p>The Dameng database is deployed in the form of a container on an ECS instance, registered as a systemctl system service, and starts automatically upon startup. You can manage system services through commands.</p>
+<pre><code class="language-bash">Start: sudo systemctl start dm8 database
+Stop: sudo systemctl stop dm8 database
+Restart: sudo systemctl restart dm8 database
+</code></pre>
+<h2 id="log-in-to-the-database">Log in to the database</h2>
+<ol>
+<li>By default, accessing database ports through the public network is not supported. Please add your application server to the same security group as the database to access the database service. </li>
+<li>The database port can be viewed from the service instance overview page.</li>
+<li>Log in to the database</li>
+</ol>
+<pre><code class="language-bash"># From service instance details-&gt;Resources, click &quot;Remote Connect&quot;-&gt;Connect to ECS instance through Session Manager, execute command to enter container
+sudo docker exec -it application-dm8-1 bash
+
+#Execute commands in the container shell to connect to the database
+source /etc/profile
+/opt/dmdbms/bin/disql SYSDBA/PASSWORD # Replace PASSWORD with your SYSDBA password
+</code></pre>
+        
+      </div>
+
+      <div class="copyrights">© 2009-2022 Aliyun.com 版权所有</div>
+    </div>
+  </div>
+  
+  <!--
+  MkDocs version      : 1.6.1
+  Docs Build Date UTC : 2024-12-09 09:03:23.752736+00:00
+  -->
+</body>
+</html>
