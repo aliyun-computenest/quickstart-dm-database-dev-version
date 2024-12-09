@@ -127,7 +127,7 @@ Resources:
       VpcId:
         Ref: VpcId
       SecurityGroupIngress:
-        - PortRange: 30236/30236
+        - PortRange: 22/22
           Priority: 1
           SourceCidrIp: 0.0.0.0/0
           IpProtocol: tcp
@@ -156,7 +156,7 @@ Resources:
         Ref: EcsInstanceType
       SystemDiskCategory: cloud_essd
       SystemDiskSize: 200
-      InternetMaxBandwidthOut: 0
+      InternetMaxBandwidthOut: 5
       IoOptimized: optimized
       MaxAmount: 1
   RunInstallCommand:
@@ -214,15 +214,19 @@ Resources:
             WantedBy=multi-user.target
             EOF
 
+            systemctl enable dm8-database
             systemctl start dm8-database
             sleep 10
             ARGUS_VERSION=3.5.7 /bin/bash -c "$(curl -sS https://cms-agent-${RegionId}.oss-${RegionId}-internal.aliyuncs.com/Argus/agent_install_ecs-1.7.sh)" >> /root/install_cms_agent.log 2>&1
           - RegionId:
               Ref: ALIYUN::Region
 Outputs:
-  登录数据库:
+  登录数据库: 
     Value: 登录ECS实例，执行sudo docker exec -it application-dm8-1 bash进入容器，在容器shell中执行“source /etc/profile;/opt/dmdbms/bin/disql SYSDBA/您设定的SYSDBA密码”连接数据库。
-  启停数据库服务器: "启动：sudo systemctl start dm8-database；停止：sudo systemctl stop dm8-database；重启：sudo systemctl restart dm8-database"
+  启停数据库服务器: 
+    Value: "启动：sudo systemctl start dm8-database；停止：sudo systemctl stop dm8-database；重启：sudo systemctl restart dm8-database"
+  数据库端口: 
+    Value: 30236
 Metadata:
   ALIYUN::ROS::Interface:
     ParameterGroups:
@@ -235,7 +239,6 @@ Metadata:
       - Parameters:
           - EcsInstanceType
           - InstancePassword
-          - SysdbaPassword
         Label:
           default: 资源和数据库配置
       - Parameters:
