@@ -111,7 +111,7 @@ Parameters:
     Type: String
     Description:
       en: SYSDBA login password, length 9-48, does not support special characters
-      zh-cn: SYSDBA登录密码,长度9-48，不支持特殊字符为密码
+      zh-cn: SYSDBA登录密码，长度9-48，不支持特殊字符为密码
     AllowedPattern: '^[a-zA-Z0-9]{9,48}$'
     Label:
       en: SYSDBA Password
@@ -221,11 +221,15 @@ Resources:
           - RegionId:
               Ref: ALIYUN::Region
 Outputs:
-  登录数据库: 
+  HowToConnectToDatabase: 
+    Label:
+      en: Connect to Database
+      zh-cn: 连接数据库
     Value: 登录ECS实例，执行sudo docker exec -it application-dm8-1 bash进入容器，在容器shell中执行“source /etc/profile;/opt/dmdbms/bin/disql SYSDBA/您设定的SYSDBA密码”连接数据库。
-  启停数据库服务器: 
-    Value: "启动：sudo systemctl start dm8-database；停止：sudo systemctl stop dm8-database；重启：sudo systemctl restart dm8-database"
-  数据库端口: 
+  DatabasePort: 
+    Label:
+      en: Database Port
+      zh-cn: 数据库端口
     Value: 30236
 Metadata:
   ALIYUN::ROS::Interface:
@@ -235,17 +239,20 @@ Metadata:
           - PayPeriodUnit
           - PayPeriod
         Label:
-          default: 付费类型配置
+          en: Pay Type Configuration
+          zh-cn: 付费类型配置
       - Parameters:
           - EcsInstanceType
           - InstancePassword
           - SysdbaPassword
         Label:
-          default: 资源和数据库配置
+          en: Resource and Database Configuration
+          zh-cn: 资源和数据库配置
       - Parameters:
           - ZoneId
           - VpcId
           - VSwitchId
         Label:
-          default: 可用区配置
+          en: Zone Configuration
+          zh-cn: 可用区配置
       
