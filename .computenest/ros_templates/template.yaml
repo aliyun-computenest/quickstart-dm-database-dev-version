@@ -239,6 +239,7 @@ Metadata:
       - Parameters:
           - EcsInstanceType
           - InstancePassword
+          - SysdbaPassword
         Label:
           default: 资源和数据库配置
       - Parameters:
